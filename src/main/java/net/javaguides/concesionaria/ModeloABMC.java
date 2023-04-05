@@ -6,10 +6,12 @@ package net.javaguides.concesionaria;
 
 import java.awt.Color;
 import java.util.HashSet;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import net.javaguides.hibernate.model.Marca;
+import net.javaguides.hibernate.model.Modelo;
 
 /**
  *
@@ -25,11 +27,14 @@ public class ModeloABMC extends javax.swing.JFrame {
 
     public ModeloABMC(GestorModeloABMC gestorPadre) {
         initComponents();
+        this.setLocationRelativeTo(null);
+        this.setAlwaysOnTop(true);
         this.setDefaultCloseOperation(2);
         DefaultTableModel modelo = new DefaultTableModel();
         conocerGestor(gestorPadre);
         tablaDatos.setModel(gestor.mostrarDatos());
-    
+        setIdUltimaMarca();
+        
         actualizarComboMarcas();
     }
 
@@ -111,6 +116,7 @@ public class ModeloABMC extends javax.swing.JFrame {
         txtId.setEditable(false);
         txtId.setBackground(new java.awt.Color(255, 255, 255));
         txtId.setFont(new java.awt.Font("Leelawadee UI", 0, 12)); // NOI18N
+        txtId.setForeground(new java.awt.Color(102, 102, 102));
         txtId.setBorder(null);
         txtId.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -118,21 +124,52 @@ public class ModeloABMC extends javax.swing.JFrame {
             }
         });
 
+        txtNombre.setForeground(new java.awt.Color(153, 153, 153));
+        txtNombre.setText("Ingrese el nombre del modelo");
         txtNombre.setBorder(null);
+        txtNombre.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtNombreMouseClicked(evt);
+            }
+        });
         txtNombre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtNombreActionPerformed(evt);
             }
         });
+        txtNombre.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtNombreKeyTyped(evt);
+            }
+        });
 
+        txtAñoLanzamiento.setForeground(new java.awt.Color(153, 153, 153));
+        txtAñoLanzamiento.setText("Ingrese el año de lanzamiento del modelo");
         txtAñoLanzamiento.setBorder(null);
+        txtAñoLanzamiento.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtAñoLanzamientoMouseClicked(evt);
+            }
+        });
         txtAñoLanzamiento.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtAñoLanzamientoActionPerformed(evt);
             }
         });
+        txtAñoLanzamiento.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtAñoLanzamientoKeyTyped(evt);
+            }
+        });
 
+        txtVersion.setForeground(new java.awt.Color(153, 153, 153));
+        txtVersion.setText("Ingrese la versión del modelo");
         txtVersion.setBorder(null);
+        txtVersion.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtVersionMouseClicked(evt);
+            }
+        });
         txtVersion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtVersionActionPerformed(evt);
@@ -256,7 +293,6 @@ public class ModeloABMC extends javax.swing.JFrame {
 
         cboMarca.setFont(new java.awt.Font("Leelawadee UI", 0, 12)); // NOI18N
         cboMarca.setForeground(new java.awt.Color(51, 51, 51));
-        cboMarca.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Argentina", "Alemania", "Brasil", "EEUU" }));
         cboMarca.setBorder(null);
         cboMarca.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -360,7 +396,7 @@ public class ModeloABMC extends javax.swing.JFrame {
                         .addGroup(panelDatosRegistradosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnMarca, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cboMarca, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(26, 26, 26)
+                        .addGap(41, 41, 41)
                         .addGroup(panelDatosRegistradosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(panelBtnEliminar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(panelBtnCancelar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -371,7 +407,7 @@ public class ModeloABMC extends javax.swing.JFrame {
                 .addGap(24, 24, 24))
         );
 
-        jPanel1.add(panelDatosRegistrados, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 31, 430, 540));
+        jPanel1.add(panelDatosRegistrados, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 31, 430, 560));
 
         panelTablaDatos.setBackground(new java.awt.Color(255, 153, 0));
 
@@ -413,13 +449,13 @@ public class ModeloABMC extends javax.swing.JFrame {
             panelTablaDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTablaDatosLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblTituloTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 482, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(lblTituloTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 508, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel1.add(panelTablaDatos, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 30, 660, 540));
+        jPanel1.add(panelTablaDatos, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 30, 660, 560));
 
         barraSuperiorVentana.setBackground(new java.awt.Color(255, 255, 255));
         barraSuperiorVentana.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -495,9 +531,7 @@ public class ModeloABMC extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 573, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -514,22 +548,16 @@ public class ModeloABMC extends javax.swing.JFrame {
     private void tablaDatosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaDatosMouseClicked
         // TODO add your handling code here:
         int fila = this.tablaDatos.getSelectedRow();
+        Modelo modeloObject = (Modelo) this.tablaDatos.getValueAt(fila, 1);
         this.txtId.setText(this.tablaDatos.getValueAt(fila, 0).toString());
-        this.txtNombre.setText(this.tablaDatos.getValueAt(fila, 1).toString());
+        this.txtNombre.setText(modeloObject.toString());
         this.txtVersion.setText(this.tablaDatos.getValueAt(fila, 2).toString());
         this.txtAñoLanzamiento.setText(this.tablaDatos.getValueAt(fila, 3).toString());
-
-        for (int i = 0; i < cboMarca.getItemCount(); i++) {
-            this.cboMarca.setSelectedIndex(i);
-            if (this.cboMarca.getItemAt(i).equals(this.tablaDatos.getValueAt(fila, 4).toString())) {
-                break;
-            }
-        }
+        this.cboMarca.getModel().setSelectedItem(modeloObject.getMarca());
         habilitarBotones(false);
         panelBtnRegistrar.setBackground(Color.white);
         panelBtnRegistrar.setBorder(borderButton);
         btnRegistrar.setForeground(colorBackgroundButton);
-
         //this.cboModelo
     }//GEN-LAST:event_tablaDatosMouseClicked
 
@@ -552,12 +580,18 @@ public class ModeloABMC extends javax.swing.JFrame {
 
     private void btnRegistrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegistrarMouseClicked
         // TODO add your handling code here:
-        gestor.registrarModelo();
-        tablaDatos.setModel(gestor.mostrarDatos());
-        habilitarBotones(true);
-        panelBtnRegistrar.setBackground(colorBackgroundButton);
-        btnRegistrar.setForeground(Color.white);
-        panelBtnRegistrar.setBorder(null);
+        boolean esValido = gestor.validarCamposVacios(txtNombre, txtVersion, txtAñoLanzamiento);
+        if(esValido){
+            gestor.registrarModelo();
+            tablaDatos.setModel(gestor.mostrarDatos());
+            habilitarBotones(true);
+            panelBtnRegistrar.setBackground(colorBackgroundButton);
+            btnRegistrar.setForeground(Color.white);
+            panelBtnRegistrar.setBorder(null);
+            setIdUltimaMarca();
+        }else {
+            JOptionPane.showMessageDialog(null, "TODOS LOS CAMPOS DEL FORMULARIO DEBEN SER COMPLETADOS");
+        }
     }//GEN-LAST:event_btnRegistrarMouseClicked
 
     private void btnActualizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnActualizarMouseClicked
@@ -594,6 +628,7 @@ public class ModeloABMC extends javax.swing.JFrame {
     }//GEN-LAST:event_cboMarcaActionPerformed
 
     private void btnMarcaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMarcaMouseClicked
+        this.setAlwaysOnTop(false);
         gestor.mostrarMarcaABMC();
     }//GEN-LAST:event_btnMarcaMouseClicked
 
@@ -635,56 +670,40 @@ public class ModeloABMC extends javax.swing.JFrame {
         yMouse = evt.getY();
     }//GEN-LAST:event_barraSuperiorVentanaMousePressed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ModeloABMC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ModeloABMC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ModeloABMC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ModeloABMC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    private void txtNombreMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtNombreMouseClicked
+        // TODO add your handling code here:
+        if(txtNombre.getForeground().equals(new Color(153,153,153))) {
+            txtNombre.setText("");
+            txtNombre.setForeground(Color.darkGray);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
+    }//GEN-LAST:event_txtNombreMouseClicked
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                //
+    private void txtVersionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtVersionMouseClicked
+        // TODO add your handling code here:
+        if(txtVersion.getForeground().equals(new Color(153,153,153))) {
+            txtVersion.setText("");
+            txtVersion.setForeground(Color.darkGray);
+        }
+    }//GEN-LAST:event_txtVersionMouseClicked
 
-            }
-        });
-    }
+    private void txtAñoLanzamientoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtAñoLanzamientoMouseClicked
+        // TODO add your handling code here:
+        if(txtAñoLanzamiento.getForeground().equals(new Color(153,153,153))) {
+            txtAñoLanzamiento.setText("");
+            txtAñoLanzamiento.setForeground(Color.darkGray);
+        }
+    }//GEN-LAST:event_txtAñoLanzamientoMouseClicked
+
+    private void txtNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNombreKeyTyped
+        char c = evt.getKeyChar();
+        validarString(c, evt);
+    }//GEN-LAST:event_txtNombreKeyTyped
+
+    private void txtAñoLanzamientoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAñoLanzamientoKeyTyped
+        // TODO add your handling code here:
+        char c = evt.getKeyChar();
+        validarEntero(c, evt);
+    }//GEN-LAST:event_txtAñoLanzamientoKeyTyped
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel barraSuperiorVentana;
@@ -694,7 +713,7 @@ public class ModeloABMC extends javax.swing.JFrame {
     private javax.swing.JLabel btnEliminar;
     private javax.swing.JLabel btnMarca;
     private javax.swing.JLabel btnRegistrar;
-    private javax.swing.JComboBox<String> cboMarca;
+    private javax.swing.JComboBox<Marca> cboMarca;
     private javax.swing.JComboBox<String> cboPais;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel9;
@@ -736,7 +755,7 @@ public class ModeloABMC extends javax.swing.JFrame {
         cboMarca.removeAllItems();
         gestor.conocerMarcas();
         for(Marca m : gestor.listaMarcas){
-            cboMarca.addItem(m.getNombre());
+            cboMarca.addItem(m);
         }
     }
     private void habilitarBotones(boolean estado) {
@@ -760,8 +779,22 @@ public class ModeloABMC extends javax.swing.JFrame {
     String getTxtVersion() {
         return txtVersion.getText();
     }
-    public int getMarca() {
-        return cboMarca.getSelectedIndex();
+    public Marca getMarca() {
+        return (Marca) cboMarca.getSelectedItem();
+    }
+    Object getModelo() {
+        return this.tablaDatos.getValueAt(this.tablaDatos.getSelectedRow(), 1);
     }
 
+    private void setIdUltimaMarca() {
+        txtId.setText(Integer.toString(gestor.conocerUltimoIdModelo()));
+    }
+
+    public void validarString(char c, java.awt.event.KeyEvent evt){
+        if ((c<'a' ||  c>'z') && (c<'A' ||  c>'Z')) evt.consume();
+    }
+    
+    public void validarEntero(char c, java.awt.event.KeyEvent evt) {
+        if (c<'0' || c>'9') evt.consume();
+    }
 }

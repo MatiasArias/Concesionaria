@@ -1,18 +1,31 @@
 package net.javaguides.concesionaria;
 
+import java.awt.Color;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import net.javaguides.hibernate.dao.GestorHibernate;
 import net.javaguides.hibernate.model.Cliente;
+import net.javaguides.hibernate.model.Marca;
 
 public class GestorClienteABMC {
 
     private List<Cliente> listaClientes;
+    
+    private int ultimoIdCliente;
+
+    Color disableColor = new Color(153,153,153);
+    
+    GestorHibernate gestorHibernate;
+
     ClienteABMC pantallaCliente;
-    GestorHibernate gestorHib = new GestorHibernate();
 
     public GestorClienteABMC() {
+        gestorHibernate = GestorHibernate.getInstancia();
         pantallaCliente = new ClienteABMC(this);
     }
 
@@ -25,9 +38,8 @@ public class GestorClienteABMC {
         String telefono = pantallaCliente.getTxtTelefono();
         String fechaNacimiento = pantallaCliente.getTxtFechaNacimiento();
         Cliente clienteObject = new Cliente(nombre, apellido, direccion, documento, email, telefono, fechaNacimiento);
-        //ps.setString(4, cboPais.getSelectedItem().toString());
-        if (esValido(clienteObject,0)) {
-            gestorHib.saveObject(clienteObject);
+        if (esValido(clienteObject, 0)) {
+            gestorHibernate.saveObject(clienteObject);
             JOptionPane.showMessageDialog(null, "DATOS GUARDADOS CORRECTAMENTE");
             pantallaCliente.limpiarEntradas();
         } else {
@@ -37,7 +49,7 @@ public class GestorClienteABMC {
 
     public void modificarCliente() {
         Cliente clienteObject;
-        clienteObject = gestorHib.getObjectById("Cliente",Integer.parseInt(pantallaCliente.getTxtId()));
+        clienteObject = (Cliente)pantallaCliente.getCliente();
         clienteObject.setNombre(pantallaCliente.getTxtNombre());
         clienteObject.setApellido(pantallaCliente.getTxtApellido());
         clienteObject.setDireccion(pantallaCliente.getTxtDireccion());
@@ -45,11 +57,9 @@ public class GestorClienteABMC {
         clienteObject.setEmail(pantallaCliente.getTxtEmail());
         clienteObject.setTelefono(pantallaCliente.getTxtTelefono());
         clienteObject.setFechaNacimiento(pantallaCliente.getTxtFechaNacimiento());
-        System.out.println(clienteObject);
-
-        if (esValido(clienteObject,1)) {
+        if (esValido(clienteObject, 1)) {
             JOptionPane.showMessageDialog(null, "DATOS ACTUALIZADOS CORRECTAMENTE");
-            gestorHib.updateObject(clienteObject);
+            gestorHibernate.updateObject(clienteObject);
             mostrarDatos();
             pantallaCliente.limpiarEntradas();
         } else {
@@ -57,15 +67,15 @@ public class GestorClienteABMC {
         }
     }
 
-    ;
-    
-    public void conocerClientes() {
-        listaClientes = gestorHib.getAllObjects("Cliente");
-    }
-
-    public List<Cliente> conocerListclientes() {
-        conocerClientes();
-        return listaClientes;
+    public void eliminarCliente() {
+        Cliente clienteObject = (Cliente)pantallaCliente.getCliente();
+        int pantallaConfirmarEliminacion = JOptionPane.showConfirmDialog(null, "¿Está seguro de eliminar este cliente?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (pantallaConfirmarEliminacion == 0) {
+            gestorHibernate.deleteObject(clienteObject);
+            // si selecciona SI (primer boton) ejecuta la eliminacion
+        } else {
+            //No hace nada
+        }
     }
 
     public DefaultTableModel mostrarDatos() {
@@ -80,18 +90,18 @@ public class GestorClienteABMC {
         modelo.addColumn("Telefono");
         modelo.addColumn("FechaNacimiento");
         modelo.addColumn("esCliente");
-        String data[] = new String[9];
+        Object data[] = new Object[9];
         try {
             for (Cliente cliente : listaClientes) {
-                data[0] = Integer.toString(cliente.getId());
-                data[1] = cliente.getNombre();
+                data[0] = cliente.getId();
+                data[1] = cliente;
                 data[2] = cliente.getApellido();
                 data[3] = cliente.getDireccion();
                 data[4] = cliente.getDocumento();
                 data[5] = cliente.getEmail();
                 data[6] = cliente.getTelefono();
                 data[7] = cliente.getFechaNacimiento();
-                data[8] = Integer.toString(cliente.getEsCliente());
+                data[8] = cliente.getEsCliente()==0?"No":"Si";
                 modelo.addRow(data);
             }
         } catch (Exception e) {
@@ -100,34 +110,99 @@ public class GestorClienteABMC {
         return modelo;
     }
 
-    public void eliminarCliente() {
-        String id = pantallaCliente.getTxtId();
-        int pantallaConfirmarEliminacion = JOptionPane.showConfirmDialog(null, "¿Está seguro de eliminar este cliente?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-        if (pantallaConfirmarEliminacion == 0) {
-            gestorHib.deleteObject("Cliente",Integer.parseInt(id));
-            // si selecciona SI (primer boton) ejecuta la eliminacion
-        } else {
-            //No hace nada
+    public void conocerClientes() {
+        listaClientes = gestorHibernate.getAllObjects("Cliente");
+    }
+
+    public List<Cliente> conocerListclientes() {
+        conocerClientes();
+        return listaClientes;
+    }
+
+    public boolean esValido(Cliente cliente, int tipo) {
+
+        if (cliente.getNombre().length() == 0 || cliente.getApellido().length() == 0 || cliente.getDireccion().length() == 0
+                || cliente.getDocumento().length() == 0 || cliente.getEmail().length() == 0 || cliente.getFechaNacimiento().length() == 0) {
+            return false;
         }
+        if (tipo == 0) {
+            for (Cliente clienteOfList : listaClientes) {
+                if (clienteOfList.getDocumento().equalsIgnoreCase(cliente.getDocumento())) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public void mostrarPantalla() {
         pantallaCliente.setVisible(true);
     }
 
-    public boolean esValido(Cliente cliente,int tipo) {
-        
-        if (cliente.getNombre().length() == 0 || cliente.getApellido().length() == 0 || cliente.getDireccion().length() == 0
-                || cliente.getDocumento().length() == 0 || cliente.getEmail().length() == 0 || cliente.getFechaNacimiento().length() == 0) {
-            return false;
+    public int conocerUltimoIdCliente() {
+        conocerClientes();
+        if (listaClientes.isEmpty()) {
+            ultimoIdCliente = 0;
+        } else {
+            Optional<Integer> maximoId = listaClientes.stream()
+                    .map(Cliente::getId)
+                    .max(Integer::compare);
+
+            ultimoIdCliente = maximoId.get();
         }
-        if (tipo==0){
-        for (Cliente clienteOfList : listaClientes) {
-            if (clienteOfList.getDocumento().equalsIgnoreCase(cliente.getDocumento())) {
+
+        return ultimoIdCliente + 1;
+    }
+    
+    public boolean validarCamposVacios(JTextField txtNombre, JTextField txtApellido, JTextField txtDireccion, JTextField txtDNI, JTextField txtEmail, JTextField txtTelefono, JTextField txtFechaNacimiento) {
+        if(txtNombre.getForeground().equals(disableColor) || txtApellido.getForeground().equals(disableColor) || txtDireccion.getForeground().equals(disableColor)
+                || txtDNI.getForeground().equals(disableColor) || txtEmail.getForeground().equals(disableColor) || txtTelefono.getForeground().equals(disableColor)
+                || txtFechaNacimiento.getForeground().equals(disableColor)) {
+            return false;
+        }else {
+            return (validarCamposNumericos(txtDNI.getText()) && 
+                    validarCamposNumericos(txtTelefono.getText()) &&
+                    validarCamposTexto(txtNombre.getText()) && 
+                    validarCamposTexto(txtApellido.getText()) &&
+                    validarEmail(txtEmail.getText()));
+        }
+    }
+    
+    public boolean validarCamposNumericos(String campoNumerico) {
+        for (int i = 0; i < campoNumerico.length(); i++)
+        {
+            char c = campoNumerico.charAt(i);
+            if (c < '0' || c > '9') {
                 return false;
             }
         }
+        if(campoNumerico.isBlank()) {
+            return false;
         }
         return true;
     }
+    
+        
+    public boolean validarCamposTexto(String campoTexto) {
+        campoTexto = campoTexto.toUpperCase();
+        return campoTexto.matches("[A-Z]*");
+    }
+
+
+    public boolean validarEmail(String email) {
+        // Patrón para validar el email
+        Pattern pattern = Pattern
+                .compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+
+        Matcher mather = pattern.matcher(email);
+
+        if (mather.find() == true) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    
 }

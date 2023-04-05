@@ -21,12 +21,15 @@ public class MarcaABMC extends javax.swing.JFrame {
     int xMouse, yMouse;
     Color colorBackgroundButton = new Color(255,153,51);
     
+    
     public MarcaABMC(GestorMarcaABMC gestorPadre) {
         initComponents();
+        this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(2);
         DefaultTableModel modelo = new DefaultTableModel();
         conocerGestor(gestorPadre);
         tablaDatos.setModel(gestor.mostrarDatos());
+        setIdUltimaMarca();
 
         actualizarComboPaises();
     }
@@ -101,10 +104,16 @@ public class MarcaABMC extends javax.swing.JFrame {
         panelDatosRegistrados.setFont(new java.awt.Font("Microsoft YaHei Light", 0, 12)); // NOI18N
 
         txtCodigo.setFont(new java.awt.Font("Leelawadee UI", 0, 12)); // NOI18N
-        txtCodigo.setForeground(new java.awt.Color(51, 51, 51));
+        txtCodigo.setForeground(new java.awt.Color(153, 153, 153));
+        txtCodigo.setText("Ingrese el código de la marca");
         txtCodigo.setBorder(null);
         txtCodigo.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         txtCodigo.setHighlighter(null);
+        txtCodigo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtCodigoMouseClicked(evt);
+            }
+        });
         txtCodigo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtCodigoActionPerformed(evt);
@@ -114,7 +123,7 @@ public class MarcaABMC extends javax.swing.JFrame {
         txtId.setEditable(false);
         txtId.setBackground(new java.awt.Color(255, 255, 255));
         txtId.setFont(new java.awt.Font("Leelawadee UI", 0, 12)); // NOI18N
-        txtId.setForeground(new java.awt.Color(51, 51, 51));
+        txtId.setForeground(new java.awt.Color(153, 153, 153));
         txtId.setBorder(null);
         txtId.setEnabled(false);
         txtId.addActionListener(new java.awt.event.ActionListener() {
@@ -124,9 +133,16 @@ public class MarcaABMC extends javax.swing.JFrame {
         });
 
         txtDescripcion.setFont(new java.awt.Font("Leelawadee UI", 0, 12)); // NOI18N
-        txtDescripcion.setForeground(new java.awt.Color(51, 51, 51));
+        txtDescripcion.setForeground(new java.awt.Color(153, 153, 153));
         txtDescripcion.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txtDescripcion.setText("Ingrese la descripción de la marca");
+        txtDescripcion.setAlignmentY(0.0F);
         txtDescripcion.setBorder(null);
+        txtDescripcion.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtDescripcionMouseClicked(evt);
+            }
+        });
         txtDescripcion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtDescripcionActionPerformed(evt);
@@ -134,11 +150,22 @@ public class MarcaABMC extends javax.swing.JFrame {
         });
 
         txtNombre.setFont(new java.awt.Font("Leelawadee UI", 0, 12)); // NOI18N
-        txtNombre.setForeground(new java.awt.Color(51, 51, 51));
+        txtNombre.setForeground(new java.awt.Color(153, 153, 153));
+        txtNombre.setText("Ingrese el nombre de la marca");
         txtNombre.setBorder(null);
+        txtNombre.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtNombreMouseClicked(evt);
+            }
+        });
         txtNombre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtNombreActionPerformed(evt);
+            }
+        });
+        txtNombre.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtNombreKeyTyped(evt);
             }
         });
 
@@ -356,15 +383,15 @@ public class MarcaABMC extends javax.swing.JFrame {
             .addGroup(panelDatosRegistradosLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addComponent(lblTitulo)
-                .addGap(26, 26, 26)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addGroup(panelDatosRegistradosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblId)
                     .addComponent(lblCodigo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDatosRegistradosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtCodigo)
-                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(panelDatosRegistradosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosRegistradosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(separadorId, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(separadorCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -429,11 +456,11 @@ public class MarcaABMC extends javax.swing.JFrame {
         panelTablaDatos.setLayout(panelTablaDatosLayout);
         panelTablaDatosLayout.setHorizontalGroup(
             panelTablaDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTablaDatosLayout.createSequentialGroup()
                 .addContainerGap(225, Short.MAX_VALUE)
                 .addComponent(lblTituloTablaDatos)
                 .addGap(219, 219, 219))
+            .addComponent(jScrollPane1)
         );
         panelTablaDatosLayout.setVerticalGroup(
             panelTablaDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -552,10 +579,10 @@ public class MarcaABMC extends javax.swing.JFrame {
     private void tablaDatosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaDatosMouseClicked
         // TODO add your handling code here:
         int fila = this.tablaDatos.getSelectedRow();
-        Marca marcaObject = ((Marca)this.tablaDatos.getValueAt(fila, 0));
-        this.txtId.setText(marcaObject.toString());
+        Marca marcaObject = ((Marca)this.tablaDatos.getValueAt(fila, 2));
+        this.txtId.setText(Integer.toString(marcaObject.getId()));
         this.txtCodigo.setText(marcaObject.getCodigo());
-        this.txtNombre.setText(marcaObject.getNombre());
+        this.txtNombre.setText(marcaObject.toString());
         this.txtDescripcion.setText(marcaObject.getDescripcion());
         this.cboPais.getModel().setSelectedItem(marcaObject.getPais());
         habilitarBotones(false);
@@ -609,13 +636,20 @@ public class MarcaABMC extends javax.swing.JFrame {
     }//GEN-LAST:event_btnPaisMouseClicked
 
     private void btnRegistrarLblMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegistrarLblMouseClicked
-        gestor.registrarMarca();
-        tablaDatos.setModel(gestor.mostrarDatos());
-        limpiarEntradas();
-        habilitarBotones(true);
-        panelBtnRegistrar.setBackground(colorBackgroundButton);
-        panelBtnRegistrar.setBorder(null);
-        actualizarComboPaises();
+        boolean esValido = gestor.validarCamposVacios(txtCodigo, txtNombre, txtDescripcion);
+        if(esValido){
+            gestor.registrarMarca();
+            tablaDatos.setModel(gestor.mostrarDatos());
+            limpiarEntradas();
+            habilitarBotones(true);
+            panelBtnRegistrar.setBackground(colorBackgroundButton);
+            panelBtnRegistrar.setBorder(null);
+            actualizarComboPaises();
+            setIdUltimaMarca(); 
+        }else {
+            JOptionPane.showMessageDialog(null, "TODOS LOS CAMPOS DEL FORMULARIO DEBEN SER COMPLETADOS");
+        }
+        
     }//GEN-LAST:event_btnRegistrarLblMouseClicked
 
     private void btnEliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnActualizarMouseClicked
@@ -686,6 +720,36 @@ public class MarcaABMC extends javax.swing.JFrame {
         panelBtnRegistrar.setBorder(null);
     }//GEN-LAST:event_btnEliminarLblMouseClicked
 
+    private void txtCodigoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtCodigoMouseClicked
+        // TODO add your handling code here:
+        if(txtCodigo.getForeground().equals(new Color(153,153,153))) {
+           txtCodigo.setText("");
+           txtCodigo.setForeground(Color.darkGray); 
+        }
+        
+    }//GEN-LAST:event_txtCodigoMouseClicked
+
+    private void txtNombreMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtNombreMouseClicked
+        // TODO add your handling code here:
+        if(txtNombre.getForeground().equals(new Color(153,153,153))) {
+            txtNombre.setText("");
+            txtNombre.setForeground(Color.darkGray);
+        }
+    }//GEN-LAST:event_txtNombreMouseClicked
+
+    private void txtDescripcionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtDescripcionMouseClicked
+        // TODO add your handling code here:
+        if(txtDescripcion.getForeground().equals(new Color(153,153,153))) {
+            txtDescripcion.setText("");
+            txtDescripcion.setForeground(Color.darkGray);
+        }
+    }//GEN-LAST:event_txtDescripcionMouseClicked
+
+    private void txtNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNombreKeyTyped
+        char c = evt.getKeyChar();
+        validarString(c, evt);
+    }//GEN-LAST:event_txtNombreKeyTyped
+
     /**
      * @param args the command line arguments
      */
@@ -754,7 +818,7 @@ public class MarcaABMC extends javax.swing.JFrame {
         return txtId.getText();
     }
     public Marca getMarca() {
-        return (Marca)this.tablaDatos.getValueAt(this.tablaDatos.getSelectedRow(), 0);
+        return (Marca)this.tablaDatos.getValueAt(this.tablaDatos.getSelectedRow(), 2);
     }
     public String getTxtNombre() {
         return txtNombre.getText();
@@ -778,6 +842,14 @@ public class MarcaABMC extends javax.swing.JFrame {
             cboPais.addItem(p);
         }
         
+    }
+    
+    public void setIdUltimaMarca(){
+        txtId.setText(Integer.toString(gestor.conocerUltimoIdMarca()));
+    }
+    
+    public void validarString(char c, java.awt.event.KeyEvent evt){
+        if ((c<'a' || c>'z') && (c<'A' || c>'Z')) evt.consume();
     }
 
 }
